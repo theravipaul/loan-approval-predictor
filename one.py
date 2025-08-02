@@ -13,7 +13,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 
 MODEL_FILE = "models/final_loan_model.pkl"
-DATA_FILE = "data/loan-train.csv"
+DATA_FILE = "loan-train.csv"
 
 # ----------------- Build Pipeline -----------------
 def build_pipeline(numerical_columns, categorical_columns):
@@ -141,3 +141,4 @@ if st.button("Predict Loan Approval"):
         st.success("✅ Loan Approved")
     else:
         st.error("❌ Loan Not Approved")
+
