@@ -13,7 +13,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 
 MODEL_FILE = "models/final_loan_model.pkl"
-DATA_FILE = "loan-train.csv"
+DATA_FILE = "data/loan-train.csv"
 
 # ----------------- Build Pipeline -----------------
 def build_pipeline(numerical_columns, categorical_columns):
@@ -42,6 +42,8 @@ def build_pipeline(numerical_columns, categorical_columns):
 
 # ----------------- Train Model -----------------
 def train_model():
+    st.info("Training model... please wait ⏳")
+
     df = pd.read_csv(DATA_FILE)
 
     # Feature engineering
@@ -70,11 +72,9 @@ def train_model():
 
     pipeline = build_pipeline(numerical_columns, categorical_columns)
 
-    # GridSearch for best parameters
     param_grid = {
         'model__n_estimators': [100, 200],
-        'model__max_depth': [None, 5, 10],
-        'model__min_samples_split': [2, 5]
+        'model__max_depth': [None, 5, 10]
     }
 
     grid_search = GridSearchCV(pipeline, param_grid, cv=3, scoring='accuracy', n_jobs=-1)
@@ -87,18 +87,21 @@ def train_model():
     os.makedirs("models", exist_ok=True)
     joblib.dump(best_pipeline, MODEL_FILE)
 
+    st.success(f"Model trained successfully ✅ (Accuracy: {best_pipeline.score(x_test, y_test):.2f})")
     return best_pipeline
 
 # ----------------- Load or Train -----------------
 if os.path.exists(MODEL_FILE):
-    model = joblib.load(MODEL_FILE)
+    try:
+        model = joblib.load(MODEL_FILE)
+    except:
+        model = train_model()
 else:
     model = train_model()
 
 # ----------------- Streamlit UI -----------------
 st.title("🏦 Loan Approval Predictor")
 
-# User Inputs
 gender = st.selectbox("Gender", ["Male", "Female"])
 married = st.selectbox("Married", ["Yes", "No"])
 education = st.selectbox("Education", ["Graduate", "Not Graduate"])
@@ -117,7 +120,6 @@ debt_income_ratio = loan_amount / total_income if total_income > 0 else 0
 loan_amount_log = np.log1p(loan_amount)
 loan_term_years = loan_term / 12
 
-# Prepare input dataframe
 input_data = pd.DataFrame([{
     "Gender": gender,
     "Married": married,
@@ -133,7 +135,6 @@ input_data = pd.DataFrame([{
     "Dependents_num": dependents
 }])
 
-# Predict button
 if st.button("Predict Loan Approval"):
     prediction = model.predict(input_data)[0]
     if prediction == 1:
