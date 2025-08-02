@@ -12,7 +12,7 @@ from sklearn.decomposition import PCA
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split, GridSearchCV
 
-MODEL_FILE = "models/final_loan_model.pkl"
+MODEL_FILE = "final_loan_model.pkl"
 DATA_FILE = "loan-train.csv"
 
 # ----------------- Build Pipeline -----------------
@@ -141,4 +141,5 @@ if st.button("Predict Loan Approval"):
         st.success("✅ Loan Approved")
     else:
         st.error("❌ Loan Not Approved")
+
 
