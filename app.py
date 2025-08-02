@@ -137,10 +137,13 @@ input_data = pd.DataFrame([{
 
 if st.button("Predict Loan Approval"):
     prediction = model.predict(input_data)[0]
+    
     if prediction == 1:
         st.success("✅ Loan Approved")
     else:
+        # Rule-based suggestion for deserving loan amount
+        base_factor = 0.3 if credit_history == 0 else 0.5
+        suggested_amount = total_income * base_factor
+
         st.error("❌ Loan Not Approved")
-
-
-
+        st.info(f"💡 Suggested Loan Amount: ₹{int(suggested_amount):,}")
